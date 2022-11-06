@@ -1,4 +1,3 @@
-from time import *
 import sys
 import pygame
 from pygame.locals import *
@@ -6,7 +5,7 @@ import random
 
 from math import *
 
-pygame.init() # Pygame set up.
+pygame.init()  # Pygame set up.
 
 ################################################## MEASURES ##################################################
 
@@ -14,22 +13,19 @@ pygame.init() # Pygame set up.
 boundary = 600
 
 
-
-mainClock = pygame.time.Clock() # Reference to the clock.
-pygame.mixer.pre_init(44100, 16, 2, 4096) # Frequency, size, channels, buffersize.
+mainClock = pygame.time.Clock()  # Reference to the clock.
+pygame.mixer.pre_init(44100, 16, 2, 4096)  # Frequency, size, channels, buffersize.
 
 windowSurface = pygame.display.set_mode((windowWidth, windowHeight), pygame.FULLSCREEN) # Main window.
 
-font = pygame.font.SysFont("arial", 36, bold = True)
-fontMinor =pygame.font.SysFont("arial", 24, bold = True)
+font = pygame.font.SysFont("arial", 36, bold=True)
+fontMinor = pygame.font.SysFont("arial", 24, bold=True)
 
 
 leftBool = False
 rightBool = False
 
-
-
-posList = [0,0,0]
+posList = [0, 0, 0]
 posPos = 0
 
 letters = ["_", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X" , "Y", "Z"]
@@ -38,13 +34,9 @@ abcLen = len(letters)
 speed = 0.005
 
 
-
-
-
-def terminate(): # Ends the game.
-    pygame.quit() # Closes the pygame.
-    #story.close() # Closes the file story.
-    sys.exit() # Closes the programme.
+def terminate():  # Ends the game
+    pygame.quit()  # Closes the pygame
+    sys.exit()  # Closes the programme
 
 
 def waitFor(t, mode=""):
@@ -54,55 +46,55 @@ def waitFor(t, mode=""):
         checkEvents(mode)
         counter += mainClock.tick()
 
-def checkEvents(mode = ""):
+def checkEvents(mode=""):
 
     global leftBool
     global rightBool
     
-    for e in pygame.event.get():
+    for event in pygame.event.get():
         
-        if e.type == QUIT: # Recognises the ESC key pressed and terminates the game.
+        if event.type == QUIT: # Recognises the ESC key pressed and terminates the game.
             terminate()
-        elif e.type == KEYUP:
-            if e.key == K_ESCAPE:
+        elif event.type == KEYUP:
+            if event.key == K_ESCAPE:
                 terminate()
 
         if mode == "play":
             
-            if e.type == KEYUP:
-                if e.key == K_LEFT:
+            if event.type == KEYUP:
+                if event.key == K_LEFT:
                     leftBool = False
-                elif e.key == K_RIGHT:
+                elif event.key == K_RIGHT:
                     rightBool = False
-                elif e.key == K_SPACE:
+                elif event.key == K_SPACE:
                     shoot()
 
-            if e.type == KEYDOWN:
-                if e.key == K_LEFT:
+            if event.type == KEYDOWN:
+                if event.key == K_LEFT:
                     leftBool = True
-                elif e.key == K_RIGHT:
+                elif event.key == K_RIGHT:
                     rightBool = True
 
         elif mode == "over":
             global posPos
-            if e.type == KEYUP:               
-                if e.key == K_LEFT and posPos > 0:
+            if event.type == KEYUP:
+                if event.key == K_LEFT and posPos > 0:
                     posPos -= 1
-                elif e.key == K_RIGHT and posPos < 2:
+                elif event.key == K_RIGHT and posPos < 2:
                     posPos += 1
-                elif e.key == K_UP:
+                elif event.key == K_UP:
                     if posList[posPos] == 0:
                         posList[posPos] = abcLen-1
                     else:
                         posList[posPos] -= 1
                     printLet(posPos, letters[posList[posPos]])
-                elif e.key == K_DOWN:
+                elif event.key == K_DOWN:
                     if posList[posPos] == abcLen-1:
                         posList[posPos] = 0
                     else:
                         posList[posPos] += 1
                     printLet(posPos, letters[posList[posPos]])
-                elif e.key == K_SPACE:
+                elif event.key == K_RETURN:
                     return False
 
     return True
@@ -129,10 +121,10 @@ class CartesianCoord:
         return PolarCoord(sqrt(self.x*self.x+self.y*self.y), atan(self.y/self.x))
 
     def intX(self):
-        return int(x)
+        return int(self.x)
 
     def intY(self):
-        return int(y)
+        return int(self.y)
 
 
 class Player:
@@ -140,8 +132,8 @@ class Player:
     def __init__(self):
         self.reset()
         
-        self.character = pygame.image.load("character.png")
-        self.characterW = pygame.image.load("characterW.png")
+        self.character = pygame.image.load("media/img/character.png")
+        self.characterW = pygame.image.load("media/img/characterW.png")
         self.rect=self.character.get_rect()
         self.rect.center = (300,300)
 
@@ -180,7 +172,7 @@ class Player:
     def hurt(self):
         player.lifes -= 1
         printHeart(False, player.lifes)
-        pygame.mixer.Sound("hurt.ogg").play()
+        pygame.mixer.Sound("media/audio/hurt.wav").play()
 
 
 
@@ -190,10 +182,10 @@ bulletList = []
 
 class Bullet:
 
-    def __init__(self,theta):
-        self.coord = PolarCoord(25,theta)
-        self.img = pygame.image.load("bullet.png")
-        self.imgW = pygame.image.load("bulletW.png")
+    def __init__(self, theta):
+        self.coord = PolarCoord(25, theta)
+        self.img = pygame.image.load("media/img/bullet.png")
+        self.imgW = pygame.image.load("media/img/bulletW.png")
         self.rect = self.img.get_rect()
 
         cart = self.coord.toCartesian()
@@ -217,13 +209,13 @@ class Bullet:
             self.rect.center = (cart.x, cart.y)
             windowSurface.blit(self.img, self.rect)
 
-    
 
-        
+
+
 
 def shoot():
     Bullet(player.coord.theta)
-    pygame.mixer.Sound("laser.wav").play()
+    pygame.mixer.Sound("media/audio/laser.wav").play()
 
 
 def dist(a,b):
@@ -239,8 +231,8 @@ class Enemy():
     def __init__(self, categ=""):
         self.categ = categ
         self.coord = PolarCoord(285, random.random()*2*pi)
-        self.img = pygame.transform.rotate(pygame.image.load("enemy.png"), (self.coord.theta-pi/2)*180/pi+180)
-        self.imgW = pygame.transform.rotate(pygame.image.load("enemyW.png"),(self.coord.theta-pi/2)*180/pi+180)
+        self.img = pygame.transform.rotate(pygame.image.load("media/img/enemy.png"), (self.coord.theta-pi/2)*180/pi+180)
+        self.imgW = pygame.transform.rotate(pygame.image.load("media/img/enemyW.png"), (self.coord.theta-pi/2)*180/pi+180)
         self.rect = self.img.get_rect()
 
         cart = self.coord.toCartesian()
@@ -266,7 +258,7 @@ class Enemy():
             self.rect.center = (cart.x, cart.y)
             windowSurface.blit(self.img, self.rect)
         
-    
+
 
 
 
@@ -276,13 +268,12 @@ player = Player()
 
 
 
-heart = pygame.image.load("heart.png")
-blackHeart = pygame.image.load("blackHeart.png")
+heart = pygame.image.load("media/img/heart.png")
+blackHeart = pygame.image.load("media/img/blackHeart.png")
 
 heart_rect = heart.get_rect()
 heart_rect.y = 50
 
-#windowSurface.blit(heart, heart_rect)
 
 def printHeart(isRed, i):
     img = heart if isRed else blackHeart
@@ -298,12 +289,11 @@ def printHeart(isRed, i):
 
 
 
-
 def printNum(n):
-    textobj = font.render(str(n), 1, (255,255,255))
+    textobj = font.render(str(n), 1, (255, 255, 255))
     textrect = textobj.get_rect()
     textrect.topleft = (730, 40)
-    pygame.draw.rect(windowSurface, (0,0,255), (730,40, 70, 50))
+    pygame.draw.rect(windowSurface, (0, 0, 255), (730, 40, 70, 50))
     windowSurface.blit(textobj,textrect)
     pygame.display.update()
 
@@ -333,7 +323,7 @@ def over(n):
     textrect.topleft = (190, 280)
     windowSurface.blit(textobj,textrect)
     pygame.display.update()
-    pygame.mixer.Sound("over.wav").play()
+    pygame.mixer.Sound("media/audio/over.wav").play()
 
     pygame.draw.rect(windowSurface, (0,0,0), (200, 320, 200, 70))
     textobj = fontMinor.render("NAME:", 1, (255,255,255))
@@ -363,32 +353,6 @@ def over(n):
         " " + str(n) + "\n"
         )
     file.close()
-    
-        
-
-
-
-
-
-
-    
-
-
-
-
-def lessThan(x,y):
-    i = int(x.split(" ")[1])
-    j = int(x.split(" ")[1])
-    return i <= j
-
-
-
-
-
-
-
-
-
 
 
 def mainLoop():
@@ -432,6 +396,7 @@ def mainLoop():
             over(n)
             break
 
+
 while True:
 
     enemyList.clear()
@@ -459,21 +424,16 @@ while True:
 
     print(ranking)
 
-    ranking.sort(key = lambda x : list(range(1000000)).index(int(x.split(" ")[1][:-1])), reverse = True)
+    ranking.sort(key=lambda x: list(range(1000000)).index(int(x.split(" ")[1][:-1])), reverse=True)
 
-
-    for i in range( min(10, len(ranking)) ):
-        textobj = fontMinor.render(ranking[i][:-1], 1, (255,255,255))
+    for i in range(min(10, len(ranking))):
+        textobj = fontMinor.render(ranking[i][:-1], 1, (255, 255, 255))
         textrect = textobj.get_rect()
         textrect.topleft = (620, 150 + 30*i)
-        windowSurface.blit(textobj,textrect)
+        windowSurface.blit(textobj, textrect)
 
     printNum(0)
 
-
-    
     mainLoop()
 
 terminate()
-    
-    #waitFor(10)
